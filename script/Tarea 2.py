@@ -170,16 +170,99 @@ Image("./images/02-happiness-economics.png")
 
 # El color de cada círculo está relacionado al valor de la columna `paradox`.
 
+df_happy = pd.read_csv(r'.\data\02-happiness-economics.csv', index_col=0)
+hightlight = ["Burundi","Benin","Tanzania","India","Ukraine","Vietnam","Pakistan","China","Brazil","Venezuela","Greece","Spain","Japan",
+              "Germany","Netherlands","United States","United Arab Emirates","Hong Kong"]
+nombres_paises = list(df_happy.query("pop > 5000000 and year == 2018")['name'])
+df1 = df_happy[df_happy['name'].isin(nombres_paises) & ~df_happy['name'].isin(hightlight)].copy()
+df2 = df_happy[df_happy['name'].isin(hightlight)].copy()
+df1['gdp.pc']=df1['gdp.pc']/1000
+df2['gdp.pc']=df2['gdp.pc']/1000
+df1
+
+
+datapais.paradox
+
+
 #scatter
-    #paises resaltados
-    #nombres paises resaltaos
-#lineas scatter
-#grid
+fig, ax = plt.subplots(figsize=(13, 9))
+popbreak = {'<25m' : 80 , '25m-100m' : 250, '100m-500m' : 800, '500m+' : 2000}
+paleta_no = {False: "#87d4df", True: "#f9997a"}
+paleta_si = {False: "#00a7c0", True: "#f04e33"}
+ax1 = sns.scatterplot(data=df1[df1['year']==2018], #Scatter de los no hightlighted
+                      ax=ax,
+                      x='gdp.pc',
+                      y='happy',
+                      size='pop.break',
+                      sizes=popbreak,
+                      hue='paradox',
+                      legend=False,
+                      palette=paleta_no,
+                      zorder=5
+
+                      )
+#paises resaltados
+ax2 = sns.scatterplot(data=df2[df2['year']==2018], #Scatter de los hightlighted
+                      ax=ax,
+                      x='gdp.pc',
+                      y='happy',
+                      size='pop.break',
+                      sizes=popbreak,
+                      hue='paradox',
+                      legend=False,
+                      zorder=6,
+                      palette=paleta_si
+
+                      )
+
 #escala log
+ax1.set_xscale('log')
+ax2.set_xscale('log')
+
+fig.text(x=0.48,y=0.45,s='Vietnam',color='#f04e33')
+#lineas scatter
+for pais in list(df1.name.unique()):
+    datapais=df1[df1['name']==pais]
+    if datapais.paradox.iloc[0]:
+        plt.plot(datapais['gdp.pc'],datapais['happy'], lw=2, color="#f9997a")
+    else:
+        plt.plot(datapais['gdp.pc'],datapais['happy'], lw=2, color="#87d4df")
+
+for pais in list(df2.name.unique()):
+    datapais=df2[df2['name']==pais]
+    if datapais.paradox.iloc[0]:
+        plt.plot(datapais['gdp.pc'],datapais['happy'], lw=2, color="#f04e33", zorder=6)
+    else:
+        plt.plot(datapais['gdp.pc'],datapais['happy'], lw=2, color="#00a7c0", zorder=6)        
+#grid
+ax1.grid(visible=True,axis='y')
+ax1.spines['left'].set_visible(False)
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+ax1.spines['bottom'].set_visible(False)
+ax1.set_ylim(3,8.6)
+ax1.set_xlim(0.6,100)
+ax1.plot([0.6,100],[3,3],color='k')
+ax1.yaxis.set_tick_params(length=0)
+ax1.xaxis.set_tick_params(length=6)
+ax1.xaxis.set_ticklabels([1,5,10,50,100])
+ax1.xaxis.set_ticks(([1,5,10,50,100]))
+
+fig.add_artist(patches.Rectangle(xy=(0.1,0.5),color='w',zorder=7,width=0.3,height=0.4))
+
+fig.add_artist(patches.Ellipse(xy=(0.14,0.6),width=.01,height=.01*13/9,zorder=16,color='k',lw=.8,fill=False,)) 
+fig.add_artist(patches.Ellipse(xy=(0.17,0.6),width=.015,height=.015*13/9,zorder=16,color='k',lw=.8,fill=False,)) 
+fig.add_artist(patches.Ellipse(xy=(0.20,0.6),width=.026,height=.026*13/9,zorder=16,color='k',lw=.8,fill=False,)) 
+fig.add_artist(patches.Ellipse(xy=(0.27,0.6),width=.06,height=.06*13/9,zorder=16,color='k',lw=.8,fill=False,)) 
+
 #linea negra top
+fig.add_artist(lines.line2d())
 #texto top
+fig.text
 #mini linea
+fig.add_artist(lines.line2d())
 #texto mini linea
+fig.text
 #texto sub mini linea
 #leyenda
 #leyenda 2
@@ -190,5 +273,8 @@ Image("./images/02-happiness-economics.png")
 #label eje x *3
 #sublabel eje x
 #fuente
+plt.show()
+
+
 
 
